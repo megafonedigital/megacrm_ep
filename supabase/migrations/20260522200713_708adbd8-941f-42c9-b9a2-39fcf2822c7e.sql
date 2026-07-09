@@ -1,0 +1,1 @@
+ALTER TABLE public.ai_knowledge_company ADD COLUMN IF NOT EXISTS faq jsonb NOT NULL DEFAULT '[]'::jsonb;

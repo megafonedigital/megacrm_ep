@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_contacts_brand_created_at ON public.contacts (brand_id, created_at DESC);

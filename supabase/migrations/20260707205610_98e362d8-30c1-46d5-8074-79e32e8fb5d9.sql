@@ -1,0 +1,1 @@
+UPDATE public.ai_agents SET process_inbound_images = true WHERE name = 'Ana';

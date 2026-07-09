@@ -1,0 +1,1 @@
+ALTER TABLE public.webchat_widgets ADD COLUMN IF NOT EXISTS allow_attachments boolean NOT NULL DEFAULT true;

@@ -1,0 +1,1 @@
+ALTER TABLE public.automation_runs ALTER COLUMN conversation_id DROP NOT NULL;

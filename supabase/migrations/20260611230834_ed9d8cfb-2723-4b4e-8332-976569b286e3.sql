@@ -1,0 +1,2 @@
+ALTER TABLE public.copilot_messages ADD COLUMN IF NOT EXISTS sdk_message_id text;
+CREATE UNIQUE INDEX IF NOT EXISTS copilot_messages_thread_sdk_uniq ON public.copilot_messages (thread_id, sdk_message_id) WHERE sdk_message_id IS NOT NULL;

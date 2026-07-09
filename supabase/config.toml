@@ -1,0 +1,10 @@
+project_id = "mynmvycwhfexwhyzxnzp"
+
+[functions.webhook-receiver]
+verify_jwt = false
+
+[functions.process-webhook-event]
+verify_jwt = false
+
+[functions.validate-brand-token]
+verify_jwt = false

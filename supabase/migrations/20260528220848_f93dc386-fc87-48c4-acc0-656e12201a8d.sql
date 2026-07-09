@@ -1,0 +1,2 @@
+CREATE INDEX IF NOT EXISTS idx_contacts_brand_name ON public.contacts (brand_id, name NULLS LAST, id);
+CREATE INDEX IF NOT EXISTS idx_contacts_brand_profile_name ON public.contacts (brand_id, profile_name NULLS LAST, id);

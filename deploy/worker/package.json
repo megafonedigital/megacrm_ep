@@ -1,0 +1,17 @@
+{
+  "name": "megacrm-broadcast-worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Worker dedicado de broadcasts do MegaCRM — tick/drain/reconcile contínuos, conexão pg direta",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "pg": "^8.13.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

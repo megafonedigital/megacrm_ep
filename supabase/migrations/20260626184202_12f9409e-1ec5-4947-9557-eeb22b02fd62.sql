@@ -1,0 +1,1 @@
+ALTER TABLE public.ai_agents ADD COLUMN IF NOT EXISTS process_inbound_images boolean NOT NULL DEFAULT false;

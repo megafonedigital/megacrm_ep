@@ -1,0 +1,1 @@
+UPDATE pipeline_contact_activities SET status='pending', error_message=NULL WHERE id='98b739d9-1b1f-46cc-a1e6-a4b233875c98' AND kind='move_stage';

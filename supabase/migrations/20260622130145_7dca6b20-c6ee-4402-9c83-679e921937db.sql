@@ -1,0 +1,1 @@
+UPDATE public.broadcasts SET rate_per_minute = 750 WHERE id = 'ffd15672-02aa-4e74-a7a7-227fc3e29b42';
