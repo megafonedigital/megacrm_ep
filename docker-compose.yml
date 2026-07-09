@@ -25,8 +25,11 @@ services:
         VITE_SUPABASE_PUBLISHABLE_KEY: ${ANON_KEY}
         VITE_SUPABASE_PROJECT_ID: ${STORAGE_TENANT_ID:-megacrm}
     restart: unless-stopped
-    ports:
-      - "${WEB_PORT:-3000}:3000"
+    # Sem publicar porta no host: o EasyPanel (Traefik) roteia o domínio
+    # direto para a porta 3000 do container. Publicar 3000 no host colide
+    # com o próprio painel do EasyPanel.
+    expose:
+      - "3000"
     depends_on:
       kong:
         condition: service_healthy
