@@ -8,4 +8,5 @@ SELECT cron.alter_job(
     timeout_milliseconds := 10000
   );
   $cmd$
-);
+)
+WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'broadcast-drain-5s-a');

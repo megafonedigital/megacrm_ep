@@ -96,4 +96,5 @@ CREATE INDEX IF NOT EXISTS idx_broadcast_dispatch_queue_pending_sched
 SELECT cron.alter_job(
   (SELECT jobid FROM cron.job WHERE jobname = 'broadcast-loop-10s'),
   schedule := '5 seconds'
-);
+)
+WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'broadcast-loop-10s');
