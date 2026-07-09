@@ -178,6 +178,20 @@ services:
       DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD}
     entrypoint: ["/bin/sh", "/home/kong/kong-entrypoint.sh"]
 
+  init-auth-schema:
+    image: postgres:17-alpine
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+    entrypoint: ['/bin/sh', '-c', 'psql -c "CREATE SCHEMA IF NOT EXISTS auth" -c "GRANT USAGE, CREATE ON SCHEMA auth TO supabase_auth_admin"']
+
   auth:
     image: supabase/gotrue:v2.189.0
     restart: unless-stopped
@@ -190,6 +204,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      init-auth-schema:
+        condition: service_completed_successfully
     environment:
       GOTRUE_API_HOST: 0.0.0.0
       GOTRUE_API_PORT: 9999
