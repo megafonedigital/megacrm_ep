@@ -369,10 +369,8 @@ services:
     image: supabase/edge-runtime:v1.74.0
     restart: unless-stopped
     volumes:
-      # Functions do app (automation-engine, send-message, webhook-receiver...)
-      - ./supabase/functions:/home/deno/functions:ro
-      # Router main do self-hosted (vendored do repo oficial)
-      - ./deploy/supabase/volumes/functions/main:/home/deno/functions/main:ro
+      # Diretório único com main/ (router) + functions do app — sem nested mounts
+      - ./deploy/supabase/volumes/functions:/home/deno/functions:ro
       - deno-cache:/root/.cache/deno
     depends_on:
       kong:
