@@ -1,4 +1,5 @@
-SELECT cron.unschedule('pipeline-activities-tick');
+SELECT cron.unschedule('pipeline-activities-tick')
+WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'pipeline-activities-tick');
 
 SELECT cron.schedule(
   'pipeline-activities-tick',

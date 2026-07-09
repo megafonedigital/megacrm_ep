@@ -1,4 +1,5 @@
-SELECT cron.unschedule('broadcast-loop-2s');
+SELECT cron.unschedule('broadcast-loop-2s')
+WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'broadcast-loop-2s');
 
 SELECT cron.schedule(
   'broadcast-loop-2s',
