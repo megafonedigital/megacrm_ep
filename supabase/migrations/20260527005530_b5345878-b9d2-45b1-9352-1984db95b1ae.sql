@@ -1,7 +1,11 @@
 
 -- 1) Conceder admin ao FCA (estava só em brand_members antes)
+-- Guardado com EXISTS: em ambiente novo (self-hosted) esse usuário ainda não
+-- existe em auth.users; a role virá junto quando os dados forem importados.
 INSERT INTO public.user_roles (user_id, role)
-VALUES ('9c49dafa-7af4-4bf8-8d12-7417e6291408'::uuid, 'admin'::app_role)
+SELECT u.id, 'admin'::app_role
+  FROM auth.users u
+ WHERE u.id = '9c49dafa-7af4-4bf8-8d12-7417e6291408'::uuid
 ON CONFLICT (user_id) DO UPDATE SET role = EXCLUDED.role;
 
 -- 2) Ajustar handle_new_user: agora UNIQUE é em (user_id), não (user_id, role)
