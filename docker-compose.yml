@@ -96,6 +96,10 @@ services:
         condition: service_healthy
       auth:
         condition: service_healthy
+      # migrations do app referenciam storage.buckets/objects — o schema
+      # storage é criado pelo storage-api na primeira subida
+      storage:
+        condition: service_healthy
     volumes:
       - ./supabase/migrations:/migrations:ro
       - ./deploy/supabase/apply-migrations.sh:/apply-migrations.sh:ro
