@@ -15,6 +15,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { listBroadcasts, cancelBroadcast } from "@/lib/broadcasts.functions";
+import { seedStressContacts } from "@/lib/stress-seed.functions";
 import { NewBroadcastDialog } from "@/components/broadcasts/NewBroadcastDialog";
 import { formatDuration } from "@/lib/format-duration";
 import { toast } from "sonner";
@@ -42,17 +43,36 @@ const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive" | "
   failed: "destructive",
 };
 
-const STRESS_BRAND_ID = "fe1b40e2-4aae-4b27-84a7-8c62c9d8a5e9"; // Marcelo Horta
-const STRESS_TAG_ID = "78e69d50-94f3-45ac-a4ab-9c79943b60bf"; // __teste-constancia-broadcast
+const STRESS_COUNT = 10000;
 
 function BroadcastsPage() {
   const { activeBrandId } = useActiveBrand();
   const [openDialog, setOpenDialog] = useState(false);
   const [openStressDialog, setOpenStressDialog] = useState(false);
+  const [stressTagId, setStressTagId] = useState<string | null>(null);
+  const [seeding, setSeeding] = useState(false);
   const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null);
   const [, setNowTick] = useState(0);
   const listFn = useServerFn(listBroadcasts);
   const cancelFn = useServerFn(cancelBroadcast);
+  const seedFn = useServerFn(seedStressContacts);
+
+  async function handleStressTest() {
+    if (!activeBrandId) return;
+    setSeeding(true);
+    try {
+      const r = await seedFn({ data: { brandId: activeBrandId, count: STRESS_COUNT } });
+      setStressTagId(r.tag_id);
+      if (r.created > 0) {
+        toast.success(`${r.created.toLocaleString("pt-BR")} contatos fake criados na tag __stress-test-10k.`);
+      }
+      setOpenStressDialog(true);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Falha ao gerar contatos de stress test.");
+    } finally {
+      setSeeding(false);
+    }
+  }
   const search = useSearch({ from: "/admin/broadcasts/" });
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -128,11 +148,11 @@ function BroadcastsPage() {
           <p className="text-sm text-muted-foreground">Dispare uma automação em massa para um público filtrado.</p>
         </div>
         <div className="flex items-center gap-2">
-          {activeBrandId === STRESS_BRAND_ID && (
-            <Button variant="outline" onClick={() => setOpenStressDialog(true)} disabled={!activeBrandId}>
-              <FlaskConical className="h-4 w-4 mr-1" /> Stress Test
-            </Button>
-          )}
+          <Button variant="outline" onClick={handleStressTest} disabled={!activeBrandId || seeding}>
+            {seeding
+              ? (<><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Gerando 10k fake…</>)
+              : (<><FlaskConical className="h-4 w-4 mr-1" /> Stress Test</>)}
+          </Button>
           <Button onClick={() => setOpenDialog(true)} disabled={!activeBrandId}>
             <Plus className="h-4 w-4 mr-1" /> Novo broadcast
           </Button>
@@ -217,13 +237,13 @@ function BroadcastsPage() {
         <NewBroadcastDialog open={openDialog} onOpenChange={setOpenDialog} brandId={activeBrandId} />
       )}
 
-      {activeBrandId === STRESS_BRAND_ID && (
+      {activeBrandId && stressTagId && (
         <NewBroadcastDialog
           open={openStressDialog}
           onOpenChange={setOpenStressDialog}
           brandId={activeBrandId}
-          lockedTagId={STRESS_TAG_ID}
-          lockedTagName="__teste-constancia-broadcast (10k fake)"
+          lockedTagId={stressTagId}
+          lockedTagName="__stress-test-10k (fake)"
           defaultName={`Stress Test ${new Date().toLocaleString("pt-BR")}`}
           title="Stress Test — Broadcast"
         />
