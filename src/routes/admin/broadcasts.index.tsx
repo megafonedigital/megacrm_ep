@@ -64,7 +64,10 @@ function BroadcastsPage() {
       const r = await seedFn({ data: { brandId: activeBrandId, count: STRESS_COUNT } });
       setStressTagId(r.tag_id);
       if (r.created > 0) {
-        toast.success(`${r.created.toLocaleString("pt-BR")} contatos fake criados na tag __stress-test-10k.`);
+        toast.success(
+          `${r.created.toLocaleString("pt-BR")} contatos fake criados na tag __stress-test-10k. ` +
+          `Selecione o fluxo "Stress Test — tag add/remove" no passo 1.`,
+        );
       }
       setOpenStressDialog(true);
     } catch (e) {

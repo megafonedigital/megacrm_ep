@@ -7,7 +7,7 @@ const Input = z.object({
   count: z.number().int().min(1).max(50000).default(10000),
 });
 
-export type StressSeedResult = { tag_id: string; created: number; tagged: number };
+export type StressSeedResult = { tag_id: string; automation_id: string; created: number; tagged: number };
 
 export const seedStressContacts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
