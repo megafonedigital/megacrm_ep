@@ -13,10 +13,13 @@ export const seedStressContacts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => Input.parse(data))
   .handler(async ({ data, context }) => {
-    // rpc criada em migration própria — ausente nos types gerados do Supabase
-    const rpc = context.supabase.rpc as (name: string, args: Record<string, unknown>) =>
-      PromiseLike<{ data: unknown; error: { code?: string; message: string } | null }>;
-    const { data: result, error } = await rpc("seed_stress_contacts", {
+    // rpc criada em migration própria — ausente nos types gerados do Supabase.
+    // Cast no client (não no método): destacar .rpc do objeto quebra o this interno.
+    const supabase = context.supabase as unknown as {
+      rpc: (name: string, args: Record<string, unknown>) =>
+        PromiseLike<{ data: unknown; error: { code?: string; message: string } | null }>;
+    };
+    const { data: result, error } = await supabase.rpc("seed_stress_contacts", {
       _brand_id: data.brandId,
       _count: data.count,
     });
