@@ -5,6 +5,7 @@
  * feito em enqueue_broadcast_dispatches — o tick só alimenta a fila.
  */
 import { pool, callScalar } from "./db.js";
+import { config } from "./config.js";
 
 const LOCK_TTL_SECONDS = 25;
 
@@ -26,10 +27,14 @@ async function processBroadcastNow(broadcastId) {
     const b = rows[0];
     if (!b || b.status !== "running") return { enqueued: 0 };
 
-    // Limite alinhado ao burst do token bucket (rate/30) — a guarda de
-    // carry-ahead na SQL impede over-enqueue de qualquer forma.
+    // Alimenta 2 ticks de rate por vez para a fila nunca secar entre ticks.
+    // rate/30 (2s de carga) era calibrado para o cron de 2s do hosted; com
+    // tick de 5s alimentava só 40% da meta. O ritmo real de envio é imposto
+    // por scheduled_send_at + token bucket do claim, e a guarda de
+    // carry-ahead (90s) na SQL impede over-enqueue de qualquer forma.
     const rate = Math.max(1, b.rate_per_minute || 60);
-    const enqueueLimit = Math.max(5, Math.round(rate / 30));
+    const tickSec = config.tickIntervalMs / 1000;
+    const enqueueLimit = Math.max(5, Math.ceil((rate * tickSec * 2) / 60));
     const enqueued =
       Number(await callScalar("enqueue_broadcast_dispatches", [b.id, enqueueLimit])) || 0;
 
