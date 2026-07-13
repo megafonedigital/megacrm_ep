@@ -376,8 +376,10 @@ services:
     image: supabase/edge-runtime:v1.74.0
     restart: unless-stopped
     volumes:
-      # Diretório único com main/ (router) + functions do app — sem nested mounts
+      # Router (main) num root; functions do app em root IRMÃO — nested mount
+      # dentro de bind :ro falha. O main resolve o service nos dois roots.
       - ./deploy/supabase/volumes/functions:/home/deno/functions:ro
+      - ./supabase/functions:/home/deno/app-functions:ro
       - deno-cache:/root/.cache/deno
     depends_on:
       kong:

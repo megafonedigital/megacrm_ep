@@ -142,7 +142,22 @@ Deno.serve(async (req: Request) => {
     })
   }
 
-  const servicePath = `/home/deno/functions/${service_name}`
+  // Procura a function em dois roots: o deste diretório (main/router) e o
+  // das functions do app (supabase/functions montado como irmão — nested
+  // mount dentro de um bind :ro não funciona).
+  const roots = ['/home/deno/functions', '/home/deno/app-functions']
+  let servicePath = `${roots[0]}/${service_name}`
+  for (const root of roots) {
+    try {
+      const st = await Deno.stat(`${root}/${service_name}`)
+      if (st.isDirectory) {
+        servicePath = `${root}/${service_name}`
+        break
+      }
+    } catch {
+      // não existe neste root — tenta o próximo
+    }
+  }
   console.error(`serving the request with ${servicePath}`)
 
   const memoryLimitMb = 150
