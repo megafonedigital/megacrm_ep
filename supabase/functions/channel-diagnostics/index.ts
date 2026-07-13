@@ -34,7 +34,8 @@ Deno.serve(async (req) => {
     admin.from("channel_secrets").select("channel_id").eq("channel_id", channel_id).maybeSingle(),
   ]);
 
-  const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+  // Público (para colar na Meta), não o interno usado nas chamadas function-to-function.
+  const supabaseUrl = Deno.env.get("SUPABASE_PUBLIC_URL") ?? Deno.env.get("SUPABASE_URL") ?? "";
   const dedicatedWebhookUrl = `${supabaseUrl}/functions/v1/webhook-receiver?ch=${channel_id}`;
   const globalWebhookUrl = `${supabaseUrl}/functions/v1/webhook-receiver`;
   const globalVerifyToken = Deno.env.get("META_GLOBAL_VERIFY_TOKEN") ?? "";
